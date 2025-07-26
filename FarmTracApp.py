@@ -96,7 +96,7 @@ with SearchFarmActivity:
     SearchFarmActivityForm = st.form("Search Farm Activity")
     StartDate = SearchFarmActivityForm.date_input(label="From Date", max_value=dt.today(),value="today")
     EndDate = SearchFarmActivityForm.date_input(label="To Date", max_value=dt.today(),value="today")
-    SearchFarmName = SearchFarmActivityForm.selectbox(label="Farm Name",options=FarmData["FarmName"],index=None)
+    SearchFarmName = SearchFarmActivityForm.multiselect(label="Farm Name",options=FarmData["FarmName"])
     SearchFarmActivityBtn = SearchFarmActivityForm.form_submit_button("Search Activity")
     if SearchFarmActivityBtn:
         if StartDate>EndDate:
@@ -105,6 +105,13 @@ with SearchFarmActivity:
             if FarmActivityData.empty:
                 st.error("Error: There is no farm activity data!")
             else:
-                if SearchFarmName == None:
-                    SearchResult = FarmActivityData[(FarmActivityData["FarmWorkDate"]>=StartDate) & (FarmActivityData["FarmWorkDate"]<=EndDate)]
-                    SearchFarmActivity.write(SearchResult)
+                SearchResult = FarmActivityData[(FarmActivityData["FarmWorkDate"]>=StartDate) & (FarmActivityData["FarmWorkDate"]<=EndDate)]
+                if SearchFarmName == []:
+                    SearchFarmName = SearchResult["FarmName"].unique()
+                for farm in SearchFarmName:
+                    FarmResult = SearchResult[SearchResult["FarmName"]==farm]
+                    SearchFarmActivity.header(f"Farm - {farm}:")
+                    FarmCT = pd.crosstab(FarmResult["FarmWorkDate"],FarmResult["WorkerName"])
+                    SearchFarmActivity.table(FarmCT)
+                    expander = SearchFarmActivity.expander("See Detailed Data")
+                    expander.table(FarmResult[["FarmWorkDate","WorkerName","WorkDescription"]])
