@@ -18,7 +18,7 @@ with AddFarm:
             st.error(f"Error: Please enter the farm name!")
         else:
             
-            FarmData = pd.read_csv("datasets\\FarmDim.csv")
+            FarmData = pd.read_csv("datasets/FarmDim.csv")
             FarmList = list(FarmData["FarmName"])
             if FarmName in FarmList:
                 st.error(f"Error: {FarmName} is already added!")
@@ -30,7 +30,7 @@ with AddFarm:
 
                 NewFarm = [NewFarmId,FarmName,dt.today()]
                 #FarmData = FarmData.append(NewFarmData,ignore_index=True)
-                with open("datasets\\FarmDim.csv",'a',newline='') as f:
+                with open("datasets/FarmDim.csv",'a',newline='') as f:
                     writerObj = writer(f)
                     writerObj.writerow(NewFarm)
                 st.success(f"Success: {FarmName} added!")
@@ -43,7 +43,7 @@ with AddWorker:
         if WorkerName == '':
             st.error(f"Error: Please enter the worker name!")
         else:
-            WorkerData = pd.read_csv("datasets\\WorkerDim.csv")
+            WorkerData = pd.read_csv("datasets/WorkerDim.csv")
             WorkerList = list(WorkerData["WorkerName"])
             if WorkerName in WorkerList:
                 st.error(f"Error: {WorkerName} is already added!")
@@ -55,15 +55,15 @@ with AddWorker:
 
                 NewWorker = [NewWorkerId,WorkerName,dt.today()]
                 #FarmData = FarmData.append(NewFarmData,ignore_index=True)
-                with open("datasets\\WorkerDim.csv",'a',newline='') as f:
+                with open("datasets/WorkerDim.csv",'a',newline='') as f:
                     writerObj = writer(f)
                     writerObj.writerow(NewWorker)
                 st.success(f"Success: {WorkerName} added!")
 
 with AddFarmActivity:
-    WorkerData = pd.read_csv("datasets\\WorkerDim.csv")
+    WorkerData = pd.read_csv("datasets/WorkerDim.csv")
     WorkerList = WorkerData["WorkerName"]
-    FarmData = pd.read_csv("datasets\\FarmDim.csv")
+    FarmData = pd.read_csv("datasets/FarmDim.csv")
     FarmList = FarmData["FarmName"]
     AddFarmActivityForm = st.form("Add Farm Activity",clear_on_submit=True)
     WorkDate = AddFarmActivityForm.date_input(label="Work Date", max_value=dt.today(), value="today")
@@ -76,22 +76,22 @@ with AddFarmActivity:
             st.error("Error: Please enter the Farm and Worker details!")
         else:
             NewFarmWorkId = 0
-            FarmWorkData = pd.read_csv("datasets\\FarmWork.csv")
+            FarmWorkData = pd.read_csv("datasets/FarmWork.csv")
             if FarmWorkData.empty:
                 NewFarmWorkId = 1
             else:
                 NewFarmWorkId = FarmWorkData["FarmWorkId"].max() + 1
             for worker in WorkerName:
                 NewFarmWork = [NewFarmWorkId, WorkDate, FarmName, worker, Description]
-                with open("datasets\\FarmWork.csv",'a',newline='') as f:
+                with open("datasets/FarmWork.csv",'a',newline='') as f:
                     writerObj = writer(f)
                     writerObj.writerow(NewFarmWork)
                 NewFarmWorkId = NewFarmWorkId + 1
             st.success("Success: Farm Activity added!")
 
 with SearchFarmActivity:
-    FarmActivityData = pd.read_csv("datasets\\FarmWork.csv")
-    FarmData = pd.read_csv("datasets\\FarmDim.csv")
+    FarmActivityData = pd.read_csv("datasets/FarmWork.csv")
+    FarmData = pd.read_csv("datasets/FarmDim.csv")
     FarmActivityData["FarmWorkDate"] = pd.to_datetime(FarmActivityData["FarmWorkDate"]).dt.date
     SearchFarmActivityForm = st.form("Search Farm Activity")
     StartDate = SearchFarmActivityForm.date_input(label="From Date", max_value=dt.today(),value="today")
